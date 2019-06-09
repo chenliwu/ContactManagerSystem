@@ -304,7 +304,7 @@
             if (!$scope.searchContactKeyword) {
                 return;
             }
-            $scope.contactDtoList = $scope.contactDtoList.filter(function (item, index, arr) {
+            $scope.contactDtoList = $scope.contactList.filter(function (item, index, arr) {
                 // 可按人名和电话号码查询
                 return item.name == $scope.searchContactKeyword || item.tel == $scope.searchContactKeyword;
             });
