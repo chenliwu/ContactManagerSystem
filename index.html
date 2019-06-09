@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>通讯录管理系统</title>
+    <script src="./js/angular.min.js"></script>
+    <link rel="stylesheet" href="./bootstrap-3.3.7-dist/css/bootstrap.css" />
+    <script src="./js/jquery-2.1.0.min.js"> </script>
+    <script src="./bootstrap-3.3.7-dist/js/bootstrap.js"></script>
+</head>
+
+<body>
+    <div class="container" ng-app="myApp" ng-controller="myCtrl">
+
+        <h2>通讯录管理系统</h2>
+
+        <div class="row" style="padding-top: 20px;padding-bottom: 20px;">
+            <div class="col-md-3">
+                <input type="text" class="form-control" ng-model="searchContactKeyword" placeholder="输入姓名或电话号码搜索联系人">
+            </div>
+            <div class="col-md-3">
+                <button ng-click="searchContact()" class="btn btn-primary">搜索</button>
+                <button ng-click="resetSearch()" class="btn btn-primary">重置</button>
+                <button ng-click="addContact()" class="btn btn btn-success">新增</button>
+            </div>
+        </div>
+
+
+        <div class="row">
+
+            <div class="row" ng-if="contactDtoList.length === 0">
+                <div class="col-md-3">
+                    <div>
+                        <h4 class="text-info">暂无联系人数据！</h4>
+                    </div>
+                </div>
+
+            </div>
+
+
+            <table class="table table-bordered" ng-if="contactDtoList.length > 0">
+                <thead>
+                    <tr>
+                        <td>姓名</td>
+                        <td>工作单位</td>
+                        <td>电话号码</td>
+                        <td>Email地址</td>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+
+
+
+                    <tr ng-if="contactDtoList.length > 0" ng-repeat="contact in contactDtoList track by $index">
+                        <td>{{contact.name}}</td>
+                        <td>{{contact.company}}</td>
+                        <td>{{contact.tel}}</td>
+                        <td>{{contact.email}}</td>
+                        <td>
+                            <button ng-click="modifyContact(contact,$index)" type="button" data-toggle="modal"
+                                data-target="#updateContactModal" class="btn btn-primary">修改</button>
+                            <button ng-click="deleteContact(contact,$index)" type="button"
+                                class="btn btn btn-danger">删除</button>
+                        </td>
+                    </tr>
+
+
+                </tbody>
+            </table>
+
+        </div>
+
+
+        <!-- 模态框（Modal） -->
+        <div class="modal fade" id="addOrUpdateContactModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+            aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                        <h4 ng-if="newContact && newContact!=null" class="modal-title" id="myModalLabel">新增联系人</h4>
+                        <h4 ng-if="editContact && editContact!=null" class="modal-title" id="myModalLabel">修改联系人</h4>
+                    </div>
+                    <div class="modal-body">
+
+                        <!-- 新增联系人 -->
+                        <div ng-if="newContact!=null" class="container">
+                            <div class="row">
+                                <div class="input-group col-md-3">
+                                    <label for="exampleInputEmail1">姓名</label>
+                                    <input type="text" class="form-control" placeholder="姓名"
+                                        aria-describedby="basic-addon1" ng-model="newContact.name">
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="input-group col-md-3">
+                                    <label for="exampleInputEmail1">工作单位</label>
+                                    <input type="text" class="form-control" placeholder="工作单位"
+                                        aria-describedby="basic-addon1" ng-model="newContact.company">
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="input-group col-md-3">
+                                    <label for="exampleInputEmail1">电话号码</label>
+                                    <input type="text" class="form-control" placeholder="电话号码"
+                                        aria-describedby="basic-addon1" ng-model="newContact.tel">
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="input-group col-md-3">
+                                    <label for="exampleInputEmail1">Email地址</label>
+                                    <input type="text" class="form-control" placeholder="Email地址"
+                                        aria-describedby="basic-addon1" ng-model="newContact.email">
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <!-- 修改联系人 -->
+                        <div ng-if="editContact && editContact!=null" class="container">
+                            <div class="row">
+                                <div class="input-group col-md-3">
+                                    <label for="exampleInputEmail1">姓名</label>
+                                    <input type="text" class="form-control" placeholder="姓名"
+                                        aria-describedby="basic-addon1" ng-model="editContact.name">
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="input-group col-md-3">
+                                    <label for="exampleInputEmail1">工作单位</label>
+                                    <input type="text" class="form-control" placeholder="工作单位"
+                                        aria-describedby="basic-addon1" ng-model="editContact.company">
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="input-group col-md-3">
+                                    <label for="exampleInputEmail1">电话号码</label>
+                                    <input type="text" class="form-control" placeholder="电话号码"
+                                        aria-describedby="basic-addon1" ng-model="editContact.tel">
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="input-group col-md-3">
+                                    <label for="exampleInputEmail1">Email地址</label>
+                                    <input type="text" class="form-control" placeholder="Email地址"
+                                        aria-describedby="basic-addon1" ng-model="editContact.email">
+                                </div>
+                            </div>
+
+                        </div>
+
+
+                    </div>
+                    <div class="modal-footer center">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                        <button ng-click="addOrUpdateContact()" type="button" class="btn btn-primary">提交</button>
+                    </div>
+                </div>
+                <!-- /.modal-content -->
+            </div>
+            <!-- /.modal -->
+        </div>
+
+</body>
+
+<script>
+
+    // var contact = {
+    //     id: (new Date()).getTime(),
+    //     name: '名称',
+    //     company: '工作单位',
+    //     tel: '电话号码',
+    //     email: '邮件地址'
+    // };
+
+    var app = angular.module('myApp', []);
+
+    app.controller('myCtrl', function ($scope) {
+        // 联系人数据列表
+        $scope.contactList = [];
+
+        // 展示层的联系人数据列表
+        $scope.contactDtoList = [];
+
+        // 搜索关键字
+        $scope.searchContactKeyword = "";
+        // 修改联系人
+        $scope.editContact = null;
+
+        // 添加通讯录
+        $scope.addContact = function () {
+            $scope.newContact = {
+                id: (new Date()).getTime(),
+                name: '',
+                company: '',
+                tel: '',
+                email: '',
+            };
+            $('#addOrUpdateContactModal').modal('show');
+        }
+
+        // 监听弹出层关闭事件
+        $('#addOrUpdateContactModal').on('hidden.bs.modal', function (event) {
+            if ($scope.newContact) {
+                $scope.newContact = null;
+            }
+            if ($scope.editContact) {
+                $scope.editContact = null;
+            }
+        });
+
+        // 新增联系人保存事件
+        $scope.addContactSubmit = function () {
+            if (!$scope.newContact.name) {
+                alert('请输入姓名');
+                return;
+            }
+            if (!$scope.newContact.company) {
+                alert('请输入工作单位');
+                return;
+            }
+            if (!$scope.newContact.tel) {
+                alert('请输入电话');
+                return;
+            }
+            if (!$scope.newContact.email) {
+                alert('请输入Email');
+                return;
+            }
+            $scope.contactList.push($scope.newContact);
+            $scope.contactDtoList.push($scope.newContact);
+            $scope.newContact = null;
+            $('#addOrUpdateContactModal').modal('hide');
+        }
+
+        $scope.addOrUpdateContact = function () {
+            if ($scope.newContact && $scope.newContact != null) {
+                // 新增联系人
+                $scope.addContactSubmit();
+            } else if ($scope.editContact && $scope.editContact != null) {
+                // 修改联系人
+                for (var i = 0; i < $scope.contactList.length; i++) {
+                    if ($scope.contactList[i].id === $scope.editContact.id) {
+                        $scope.contactList[i].name = $scope.editContact.name;
+                        $scope.contactList[i].company = $scope.editContact.company;
+                        $scope.contactList[i].tel = $scope.editContact.tel;
+                        $scope.contactList[i].email = $scope.editContact.email;
+                        break;
+                    }
+                }
+                for (var i = 0; i < $scope.contactDtoList.length; i++) {
+                    if ($scope.contactDtoList[i].id === $scope.editContact.id) {
+                        $scope.contactDtoList[i].name = $scope.editContact.name;
+                        $scope.contactDtoList[i].company = $scope.editContact.company;
+                        $scope.contactDtoList[i].tel = $scope.editContact.tel;
+                        $scope.contactDtoList[i].email = $scope.editContact.email;
+                        break;
+                    }
+                }
+                $scope.editContact = null;
+                $('#addOrUpdateContactModal').modal('hide');
+            }
+        }
+
+        // 删除联系人
+        $scope.deleteContact = function (deleteItem, deleteIndex) {
+            var result = confirm("确认删除该联系人吗？");
+            if (result == true) {
+                $scope.contactDtoList = $scope.contactDtoList.filter(function (item, index, arr) {
+                    return item.id !== deleteItem.id;
+                });
+                $scope.contactList = $scope.contactList.filter(function (item, index, arr) {
+                    return item.id !== deleteItem.id;
+                });
+            } else if (result == false) {
+
+            }
+        }
+
+        // 修改联系人
+        $scope.modifyContact = function (item, index) {
+            $scope.editContact = {
+                id: item.id,
+                name: item.name,
+                company: item.company,
+                tel: item.tel,
+                email: item.email
+            };
+            $('#addOrUpdateContactModal').modal('show');
+        }
+
+        // 搜索联系人
+        $scope.searchContact = function () {
+            if (!$scope.searchContactKeyword) {
+                return;
+            }
+            $scope.contactDtoList = $scope.contactDtoList.filter(function (item, index, arr) {
+                // 可按人名和电话号码查询
+                return item.name == $scope.searchContactKeyword || item.tel == $scope.searchContactKeyword;
+            });
+        }
+
+        // 重置搜索
+        $scope.resetSearch = function () {
+            $scope.searchContactKeyword = "";
+            $scope.contactDtoList = $scope.contactList.slice();
+        }
+
+    });
+
+
+
+
+
+</script>
+
+</html>
